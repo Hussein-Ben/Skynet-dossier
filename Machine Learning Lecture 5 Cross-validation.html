@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><style type="text/css">
+body { font-family: Arial }
+</style>
+<title> Machine Learning - Lecture 5: Cross-validation</title></head>
+<body text="#1A0D99" link="#E61A1A" bgcolor="#FFFFFF" alink="#FF0000">
+<h1><center> Machine Learning - Lecture 5: Cross-validation</center></h1>
+<font size="+2"><center><i>Chris Thornton</i></center></font><p></p><hr>
+<h1>Introduction</h1>
+
+In general, ML involves deriving models from data, with the
+aim of achieving some kind of desired behaviour, e.g.,
+prediction or classification.<p>
+
+But this generic task is broken down into a number of
+special cases. </p><p>
+
+We also have a range of ways in which the performance of
+methods is assessed and described.</p><p>
+
+This lecture will examine some of the concepts involved.</p><p>
+
+</p><h1>Class/output variables and values</h1>
+
+In the majority of cases, ML methods model data with the aim
+of predicting the value of one of the variables of the
+dataset.<p>
+
+The to-be-predicted variable is called the <b>output
+variable</b>. </p><p>
+
+Correct values of the output variable are called <b>target
+output values</b>, or just <b>targets</b>.  </p><p>
+
+If the output variable takes categorical values, it may be
+called the <b>class variable</b>, in which case targets may be
+called <b>target classes</b>.</p><p>
+
+In some cases, there may be multiple output variables, but
+this is quite unusual.</p><p>
+
+</p><h1>Attribute/input variables and values</h1>
+
+The other variables are called <b>input variables</b>.<p>
+
+Their values are <b>input values</b>.</p><p>
+
+If they take categorical values, they may be called
+<b>attributes</b> or <b>features</b>.</p><p>
+
+Their values are then <b>attribute values</b> or <b>feature
+values</b>.</p><p>
+
+A complete set of input values may be called a <b>vector</b>,
+<b>attribute vector</b> or <b>feature vector</b>.</p><p>
+
+Confusingly, input vectors are also sometimes just called
+<b>inputs</b>.</p><p>
+
+</p><h1>Supervised v. unsupervised learning</h1>
+
+Where the datapoints are examples associating particular
+output value(s) with particular input vectors, the method is
+said to being doing <b>supervised learning</b>.<p>
+
+Any other scenario is then some form of <b>unsupervised
+learning</b>.</p><p>
+
+However, the latter term is usually reserved for the case
+where a model is built without any pre-classification of
+variables.</p><p>
+
+</p><h1>Classification v. regression</h1>
+
+If the values of the output variable are names of
+categories, supervised learning is also called
+<b>classification</b>.<p>
+
+If the values are real numbers, the task is called
+<b>regression</b>.</p><p>
+
+A simple but popular case of classification is <b>concept
+learning</b>.</p><p>
+
+This is where the aim is to predict whether an input vector
+is or is not a member of a particular class.</p><p>
+
+Values of the output variable in this case are usually given
+as +/-, 1/0, or yes/no.</p><p>
+
+</p><h1>Seens v. Unseens</h1>
+
+In any supervised learning experiment, the set of
+input/output examples provided is called the <b>training
+set</b>.<p>
+
+We then usually have a second set of examples, called the
+<b>testing set</b>, which is used solely for testing
+generalization performance, i.e., ability of the model to
+produce correct output values for input vectors that do not
+appear in the training set.</p><p>
+
+Cases in the training set may be called <b>training examples</b>.</p><p>
+
+Statisticians are more likely to call them <b>seen cases</b>,
+or just <b>seens</b>.</p><p>
+
+Cases in the testing set may be called <b>testing examples</b>,
+<b>unseen cases</b> or just <b>unseens</b>.</p><p>
+
+</p><h1>Error v. Error rate</h1>
+
+One of the advantages of supervised learning is that we can
+use testing sets to get an objective measurement of learning
+performance.<p>
+
+The inaccuracy of predicted output values is termed the
+<b>error</b> of the method.</p><p>
+
+If target values are categorical, the error is expressed as
+an <b>error rate</b>.</p><p>
+
+This is the proportion of cases where the prediction is wrong.</p><p>
+
+</p><h1>Off-training set error</h1>
+
+Error-rate is normally measured on the testing set only. In
+this case, it may also be called the <b>off-training-set
+error-rate</b> or <b>OTS error</b>. <p>
+
+It may also be called the <b>prediction error-rate</b>, or
+<b>generalization error-rate</b>.</p><p>
+
+If error is calculated on the training set, then it would be
+called the <b>training error-rate</b>.</p><p>
+
+
+</p><h1>Error-rate example</h1>
+
+Let's say a machine-learning method is provided with this
+training set.<p>
+
+</p><pre>  petrol   hatchback   FW-drive     Ford
+  diesel   saloon      FW-drive     Ford
+  petrol   formula-1   FW-drive     Ferrari
+  petrol   convertible FW-drive     Ford
+</pre>
+
+The testing set has two cases:<p>
+
+</p><pre>  petrol   convertible RW-drive
+  diesel   hardtop     FW-drive
+</pre>
+
+Using a 1-NN method, both inputs are classified as Fords.<p>
+
+However, it turns out that the first case is in fact a Ferrari.</p><p>
+
+The model gets 1 out of 2 classifications wrong.</p><p>
+
+The error rate is 50%.</p><p>
+
+</p><h1>IID assumption</h1>
+
+For error measurements to make any sense, it is vital we
+have no overlap between training and testing examples.<p>
+
+On the other hand, we need to be sure that both sets of data
+originate from the same source or domain.</p><p>
+
+If they don't, there's no reason to expect that a model
+built for one will apply to the other.</p><p>
+
+In ML, we normally handle this by requiring the
+training and testing data to be <b>identically and
+independently distributed</b>.</p><p>
+
+It is a requirement that the testing data show the same
+statistical distribution as the training data.</p><p>
+
+But they must also be completely independent of the training
+data.</p><p>
+
+This is known as the <b>IID</b> assumption.</p><p>
+
+
+</p><h1>Holdout sets</h1>
+
+In addition to training and testing sets, we can also have
+<b>holdout sets</b>.<p>
+
+A holdout set is a (usually) small set of input/output
+examples held back for purposes of tuning the modeling.</p><p>
+
+The modeling process gets to see all the
+training data in the usual way. </p><p>
+
+But it then gets tested on the cases held back and the
+performance measurements obtained are used to control the
+modeling in some way (e.g., set a parameter).</p><p>
+
+Note that this is completely separate from use of a testing
+set, which is used for obtaining a final evaluation.</p><p>
+
+For example, we might hold back 10% of the training data and
+try to find the optimal value of k in k-means clustering by
+seeing which value gives the lowest error-rate on the
+holdout data.</p><p>
+
+</p><h1>Cross-validation</h1>
+
+In the simplest case, holdout (or testing) sets are
+constructed just by splitting some original dataset into
+more than one part.<p>
+
+But the evaluations obtained in this case tend to reflect
+the particular way the data are divided up.</p><p>
+
+The solution is to use statistical sampling to get a
+more accurate measurments.</p><p>
+
+This is called <b>cross-validation</b>.</p><p>
+
+</p><h1>Cross-validation strategies</h1>
+
+The aim in cross-validation is to ensure that every example
+from the original dataset has the same chance of appearing
+in the training and testing set.<p>
+
+The basic protocols are</p><p>
+
+</p><ul>
+<li> n-fold cross-validation: divide the data up into <img src="Machine%20Learning%20-%20Lecture%205:%20Cross-validation_files/lec03a-report-f1.png"> chunks
+and train <img src="Machine%20Learning%20-%20Lecture%205:%20Cross-validation_files/lec03a-report-f1.png"> times, treating a different chunk as the
+holdout set each time.<p>
+
+</p></li><li> leave-one-out validation: just like n-fold cross-validation
+except that chunks contain a single datapoint.<p>
+</p></li></ul>
+
+
+<h1>Summary</h1>
+
+<ul>
+<li> Inputs, outputs, classes, attributes<p>
+
+</p></li><li> Supervised v. unsupervised learning<p>
+
+</p></li><li> Training sets, testing sets, seens and unseens<p>
+
+</p></li><li> Various types of error<p>
+
+</p></li><li> IID assumption<p>
+
+</p></li><li> Holdout sets<p>
+
+</p></li><li> Cross-validation protocols<p>
+</p></li></ul>
+
+
+<h1>Questions</h1>
+
+<ul>
+<li> How many input variables are allowed in a training
+example?<p>
+
+
+</p></li><li> In the context of a training problem, what is the
+difference between an input and an input <i>value</i>?<p>
+
+
+</p></li><li> What is the solution to the `problem' specified by a set of
+training data?<p>
+
+
+</p></li><li> In the context of a training problem, what set of inputs
+should the derived model be able to handle?<p>
+
+
+</p></li><li> What syntactic differences are there between training and
+uunseen cases?<p>
+
+
+</p></li><li> How is the error rate affected if the model produced from
+some training examples yields an incorrect output for a test
+case?<p>
+
+
+</p></li><li> What would the error-rate be in the Ford/Ferrari
+classification task if both cases were classified correctly?
+
+</li></ul>
+
+
+
+</body></html>
